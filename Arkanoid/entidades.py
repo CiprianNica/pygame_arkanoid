@@ -58,9 +58,6 @@ class Raqueta:
         else:
             self.vx = 0
 
-
-
-
 class Pelota:
     imagenes_files = ['brown_ball.png', 'blue_ball.png', 'red_ball.png', 'green_ball.png']
     num_imgs_explosion = 8
@@ -141,11 +138,9 @@ class Pelota:
         return False
 
     def comprobar_colision(self, algo):
-        if self.rect.left >= algo.rect.left and self.rect.left <= algo.rect.right or \
-            self.rect.right >= algo.rect.left and self.rect.right <= algo.rect.right and \
-            self.rect.bottom >= algo.rect.top:
+        if self.rect.colliderect(algo.rect):
             self.vy *= -1
-
+            return True
 
     def actualizar(self, dt):
         self.actualizar_posicion()
@@ -165,7 +160,7 @@ class Game:
         self.ladrillos = []
         xo = 22
         yo = 22
-        for c in range(12):
+        for c in range(18):
             for f in range(5):
                 l = Ladrillo(xo+c*Ladrillo.w, yo+f*Ladrillo.h)
                 self.ladrillos.append(l)
@@ -186,26 +181,15 @@ class Game:
                     pg.quit()
                     sys.exit()
             self.raqueta.manejar_eventos()
-            '''
-                if event.type  == pg.KEYDOWN:
-
-                    if event.key == pg.K_RIGHT:
-                        self.raqueta.x += 20
-                        if self.raqueta.x + 128 >= GAME_DIMENSIONS[0]:
-                            self.raqueta.x = GAME_DIMENSIONS[0] - 128
-
-                    if event.key == pg.K_LEFT:
-                        self.raqueta.x -= 20
-                        if self.raqueta.x <= 0:
-                            self.raqueta.x = 0
-            '''
-                
 
         # actualizacion de elementos del juego
 
             game_over = self.pelota.actualizar(dt)
             self.raqueta.actualizar()
             self.pelota.comprobar_colision(self.raqueta)
+            for ladrillo in self.ladrillos:
+                if self.pelota.comprobar_colision(ladrillo) == True:
+                    self.ladrillos.remove(ladrillo)
 
 
             self.pantalla.fill((0, 0, 255))
